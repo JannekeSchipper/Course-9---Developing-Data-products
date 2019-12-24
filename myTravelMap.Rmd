@@ -1,0 +1,28 @@
+---
+title: "myTravelMap"
+author: "Janneke Schipper"
+date: "24 december 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Travel Map
+24-12-2019
+
+```{r, echo=FALSE, message=FALSE}
+library(dplyr)
+library(leaflet)
+md_travel <- data.frame(name = c("Nicaragua", "Mexico", "Belize", "Guatemala", "Shanghai", "Bejing", "Wellington", "Groningen", "Malaga", "Vietnam", "Reykjavik"),
+                        lat = c(12.139320, 23.634501, 17.189877, 15.783471, 31.230391, 39.904202, -41.286461, 53.219383, 36.721275, 14.058324, 64.126518),
+                        lng = c(-86.260963, -102.552788, -88.497650, -90.230759, 121.473701, 116.407394, 174.776230, 6.566502, -4.421399, 108.277199, -21.817438),
+                        col = c("blue", "blue", "blue", "blue", "red", "red", "purple", "green", "green", "red", "green"))
+
+
+leaflet(md_travel) %>%
+  addTiles() %>%
+  addCircleMarkers(color = ~col, label = ~name)%>%
+  addLegend(labels = c("Central-America", "Europe", "Asia"), colors = c("blue", "red", "pink"))
+```
