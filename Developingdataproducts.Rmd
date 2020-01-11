@@ -1,0 +1,81 @@
+---
+title: "Developing Data Products Week4"
+author: "Janneke Schipper"
+date: "11 januari 2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Reproducible pitch
+This is a task for the data science coursera course about developing data products for week 4.
+
+Shiny app: https://courseprojectweek3.shinyapps.io/week4courseproject/
+Presentation: https://github.com/JannekeSchipper/Course-9---Developing-Data-products
+
+## Overview data
+Top 10 countries who use the most plastic in the world
+```{r overview, echo=FALSE, message=FALSE, warning = FALSE}
+library(dplyr)
+dataset <- read.csv("./top10.csv")
+top10 <- dataset%>%
+  top_n(10, Plastic)%>%
+  arrange(desc(Plastic))
+head(top10)
+```
+
+## UI code
+```{r UI, echo = TRUE, eval = FALSE}
+library(shiny)
+# Define UI for application that draws a histogram
+shinyUI(fluidPage(
+  # Application title
+  titlePanel("Top 10 Countries plastic useage"),
+  # Sidebar with a slider input for number of bins 
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("variable", "Variable:", 
+                  c("Plastic" = "Plastic",
+                    "Gross Domestic Product Per Capita" = "GDPPC",
+                    "Literacy" = "Literacy",
+                    "Infant Mortality" = "InfantMortality",
+                    "Population" = "Population"))
+    ),
+    # Show a plot of the generated distribution
+    mainPanel(
+       plotOutput("distPlot")
+    )
+  )
+))
+```
+
+## Server code
+```{r Server, echo = TRUE, eval = FALSE}
+library(shiny)
+library(plotly)
+library(ggplot2)
+library(dplyr)
+dataset <- read.csv("./top10.csv")
+top10 <- dataset%>%
+  top_n(10, Plastic)%>%
+  arrange(desc(Plastic))
+# Define server logic required to draw a histogram
+shinyServer(function(input, output) {
+  formulaText <- reactive({
+    paste("courty vs ", input$variable)
+  })
+  output$caption <- renderText({
+    formulaText()
+  })
+  output$distPlot <- renderPlot({
+    ggplot(top10, aes_string(y=input$variable, x="Entity", fill = "Entity")) + 
+      geom_bar(stat = "identity", width = 0.7) +
+      coord_flip() +
+      theme(legend.position="none") +
+      labs(title = "Top 10 Countries plastic usage", x = "Country")
+  })
+})
+```
+
